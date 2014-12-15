@@ -49,8 +49,8 @@ test <- lapply(split(activity$steps,activity$interval), mean, na.rm = TRUE)
 df <- data.frame(matrix(unlist(test), byrow=T))
 colnames(df)[1] <- "stepsperinterval"
 bind <- cbind(df$stepsperinterval, head(activity$interval, 288))
-colnames(bind) <- c("stepsperinterval", "interval")
-with(as.data.frame(bind), plot(interval, stepsperinterval))
+colnames(bind) <- c("Number_of_steps", "interval")
+with(as.data.frame(bind), plot(interval, Number_of_steps, type="l"))
 ```
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
@@ -64,6 +64,18 @@ for(i in 1:nrow(dfbind)){
         max <- data.frame(dfbind[i,])
     }
 }
+```
+
+```
+## Warning in max(dfbind$stepsperinterval): no non-missing arguments to max;
+## returning -Inf
+```
+
+```
+## Error in if (max(dfbind$stepsperinterval) == dfbind$stepsperinterval[i]) {: argument is of length zero
+```
+
+```r
 print(max)
 ```
 
@@ -85,7 +97,7 @@ sum(is.na(activity$steps))
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
-calculate the mean for that 5-minute interval first and create a new dataset with NA replacement. 
+First, calculate the mean for that 5-minute interval first and then create a new dataset with NA replacement. 
 
 ```r
 test <- lapply(split(activity$steps,activity$interval), mean, na.rm = TRUE)
@@ -134,4 +146,51 @@ Impact: Enlarge the difference between each day of total daily number of steps.
 
 ##Are there differences in activity patterns between weekdays and weekends?
 1. Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+```r
+ibrary(lubridate)
+```
+
+```
+## Error in eval(expr, envir, enclos): could not find function "ibrary"
+```
+
+```r
+week <- data.frame(week = "", stringsAsFactors = FALSE)
+bind <- cbind(activity, week)
+for(i in 1:nrow(bind)){
+    if(wday(bind$date[i])==1 || wday(bind$date[i])==7){
+        bind$week[i] <- "weekend"
+    }else{
+        bind$week[i] <- "weekday"
+    } 
+}
+```
+
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was created using simulated data:
+
+```r
+weekend <- bind[bind$week %in% c("weekend"), ]
+weekday <- bind[bind$week %in% c("weekday"), ]
+
+test <- lapply(split(weekend$steps,weekend$interval), mean, na.rm = TRUE)
+df <- data.frame(matrix(unlist(test), byrow=T))
+colnames(df)[1] <- "Number_of_steps"
+bind <- cbind(df$Number_of_steps, head(activity$interval, 288))
+colnames(bind) <- c("Number_of_steps", "interval")
+bind <- as.data.frame(bind)
+
+test <- lapply(split(weekday$steps,weekday$interval), mean, na.rm = TRUE)
+df <- data.frame(matrix(unlist(test), byrow=T))
+colnames(df)[1] <- "Number_of_steps"
+bind2 <- cbind(df$Number_of_steps, head(activity$interval, 288))
+colnames(bind2) <- c("Number_of_steps", "interval")
+bind <- as.data.frame(bind)
+
+total <- rbind(bind, bind2)
+f <- rep(0:1, each = 288)
+f <- factor(f, labels = c("weekend", "weekday"))
+xyplot(total$Number_of_steps~total$interval|f, layout = c(1,2), type="l", ylab="Number of steps", xlab="interval")
+```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
