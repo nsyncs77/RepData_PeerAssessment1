@@ -16,6 +16,9 @@ activity <- read.csv("activity.csv", colClasses = c("numeric", "character", "num
 test <- lapply(split(activity$steps,activity$date), sum) 
 df <- data.frame(matrix(unlist(test), byrow=T))
 colnames(df)[1] <- "stepsperday"
+```
+
+```{r histogram, fig.height = 4}
 hist(df$stepsperday, col = "green", breaks = 20)
 ```
 2. Calculate and report the mean and median total number of steps taken per day
