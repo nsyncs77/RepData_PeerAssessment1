@@ -74,10 +74,63 @@ print(max)
 
 ##Imputing missing values
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+```r
+sum(is.na(activity$steps))
+```
+
+```
+## [1] 2304
+```
+
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+calculate the mean for that 5-minute interval first and create a new dataset with NA replacement. 
+
+```r
+test <- lapply(split(activity$steps,activity$interval), mean, na.rm = TRUE)
+df <- data.frame(matrix(unlist(test), byrow=T))
+colnames(df)[1] <- "stepsperinterval"
+bind <- cbind(df$stepsperinterval, head(activity$interval, 288))
+colnames(bind) <- c("stepsperinterval", "interval")
+bind <- as.data.frame(bind)
+```
+
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+```r
+for(i in 1:nrow(activity)){
+    for(j in 1:nrow(bind)){
+        if(is.na(activity$steps[i]) && activity$interval[i] == bind$interval[j]){
+            activity$steps[i] <- bind$stepsperinterval[j]
+        }
+    }
+}
+activity2 <- activity
+print(head(activity2))
+```
+
+```
+##       steps       date interval
+## 1 1.7169811 2012-10-01        0
+## 2 0.3396226 2012-10-01        5
+## 3 0.1320755 2012-10-01       10
+## 4 0.1509434 2012-10-01       15
+## 5 0.0754717 2012-10-01       20
+## 6 2.0943396 2012-10-01       25
+```
+
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
+```r
+test <- lapply(split(activity2$steps,activity2$date), sum) 
+df2 <- data.frame(matrix(unlist(test), byrow=T))
+colnames(df2)[1] <- "stepsperday"
+hist(df2$stepsperday, col = "green", breaks = 20)
+```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+Impact: Enlarge the difference between each day of total daily number of steps.
 
 ##Are there differences in activity patterns between weekdays and weekends?
 1. Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
