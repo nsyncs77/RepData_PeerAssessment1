@@ -43,8 +43,34 @@ median(df$stepsperday, na.rm = TRUE)
 
 ##What is the average daily activity pattern?
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+```r
+test <- lapply(split(activity$steps,activity$interval), mean, na.rm = TRUE)
+df <- data.frame(matrix(unlist(test), byrow=T))
+colnames(df)[1] <- "stepsperinterval"
+bind <- cbind(df$stepsperinterval, head(activity$interval, 288))
+colnames(bind) <- c("stepsperinterval", "interval")
+with(as.data.frame(bind), plot(interval, stepsperinterval))
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
 2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
+```r
+dfbind <- as.data.frame(bind)
+for(i in 1:nrow(dfbind)){
+    if(max(dfbind$stepsperinterval)==dfbind$stepsperinterval[i]){
+        max <- data.frame(dfbind[i,])
+    }
+}
+print(max)
+```
+
+```
+##     stepsperinterval interval
+## 104         206.1698      835
+```
 
 ##Imputing missing values
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
