@@ -18,17 +18,28 @@ activity <- read.csv("activity.csv", colClasses = c("numeric", "character", "num
 test <- lapply(split(activity$steps,activity$date), sum) 
 df <- data.frame(matrix(unlist(test), byrow=T))
 colnames(df)[1] <- "stepsperday"
-```
-
-
-```r
-library(knitr)
 hist(df$stepsperday, col = "green", breaks = 20)
 ```
 
-![plot of chunk histogram](Figs/histogram-1.png) 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
 2. Calculate and report the mean and median total number of steps taken per day
 
+```r
+mean(df$stepsperday, na.rm = TRUE)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+median(df$stepsperday, na.rm = TRUE)
+```
+
+```
+## [1] 10765
+```
 
 ##What is the average daily activity pattern?
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
