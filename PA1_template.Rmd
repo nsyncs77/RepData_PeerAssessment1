@@ -18,7 +18,8 @@ df <- data.frame(matrix(unlist(test), byrow=T))
 colnames(df)[1] <- "stepsperday"
 ```
 
-```{r histogram, fig.height = 4}
+```{r histogram, fig.height = 4, fig.path='Figs/'}
+library(knitr)
 hist(df$stepsperday, col = "green", breaks = 20)
 ```
 2. Calculate and report the mean and median total number of steps taken per day
